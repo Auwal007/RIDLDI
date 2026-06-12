@@ -347,7 +347,6 @@ export default function RidldiPage() {
       <section
         ref={heroRef}
         className="relative w-full overflow-hidden"
-        style={{ height: '100svh', minHeight: 600 }}
         aria-label="Hero"
       >
         {/* Full-bleed photo with parallax */}
@@ -359,7 +358,7 @@ export default function RidldiPage() {
             className="w-full h-full bg-cover bg-center"
             style={{
               backgroundImage:
-                'url(https://raw.createusercontent.com/2d27dc08-5a35-4385-9dbe-3b95ca2012fc/)',
+                'url(/hero-bg.png)',
             }}
             role="img"
             aria-label="Participants at the RIDLDI–Hamzury Innovation programme in Jos, Plateau State, 2025"
@@ -375,7 +374,10 @@ export default function RidldiPage() {
         </motion.div>
 
         {/* Headline — editorial bottom-left position */}
-        <div className="relative z-10 h-full flex flex-col justify-end pb-16 md:pb-28 px-6 md:px-16 max-w-7xl mx-auto">
+        <div
+          className="relative z-10 w-full flex flex-col justify-center pt-20 pb-20 px-6 md:px-16 max-w-7xl mx-auto"
+          style={{ minHeight: 'max(100svh, 600px)' }}
+        >
           <motion.div
             initial={reduced ? false : { opacity: 0, y: 36 }}
             animate={{ opacity: 1, y: 0 }}
