@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="./image-slot.js"></script>
+<style>
+* { box-sizing: border-box; }
+html, body { height: auto !important; min-height: 100%; overflow-x: hidden; scroll-behavior: smooth; }
+body { margin: 0; }
+img { display: block; max-width: 100%; }
+input, textarea, select, button { font-family: inherit; }
+::placeholder { color: #A39E96; }
+@keyframes ridFadeUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ridFade { from { opacity: 0; } to { opacity: 1; } }
+image-slot { display: block; }
+@media (max-width: 880px) {
+  [data-desktop-nav] { display: none !important; }
+  [data-mobile-toggle] { display: flex !important; }
+  [data-stats-strip] { grid-template-columns: 1fr 1fr !important; gap: 28px 20px !important; }
+  [data-about-grid], [data-missions-grid], [data-fellowship-grid], [data-stories-grid], [data-support-grid], [data-contact-grid], [data-apply-grid], [data-contact-row], [data-track-picker] { grid-template-columns: 1fr !important; }
+  [data-impact-grid], [data-team-grid] { grid-template-columns: 1fr 1fr !important; }
+  [data-tracks-grid] { grid-template-columns: 1fr !important; }
+  [data-partners-grid], [data-media-grid] { grid-template-columns: 1fr 1fr 1fr !important; }
+  [data-apply-row] { grid-template-columns: 1fr !important; }
+  [data-footer-grid] { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+  [data-fellowship-grid] { gap: 40px !important; }
+  [data-apply-aside] { position: static !important; }
+}
+@media (max-width: 540px) {
+  [data-stats-strip], [data-impact-grid], [data-team-grid], [data-skill-picker], [data-media-grid], [data-footer-grid] { grid-template-columns: 1fr 1fr !important; }
+  [data-partners-grid] { grid-template-columns: 1fr 1fr !important; }
+}
+</style>
+</helmet>
+
+<div style="font-family: 'Hanken Grotesk', system-ui, sans-serif; background: #FAF7F1; color: #1A1815; min-height: 100vh; -webkit-font-smoothing: antialiased; overflow-x: hidden;">
+
+  <header style="position: fixed; top: 0; left: 0; width: 100%; z-index: 100; transition: background 0.3s ease, border-color 0.3s ease; background: {{ navBg }}; backdropFilter: {{ navBlur }}; WebkitBackdropFilter: {{ navBlur }}; borderBottom: 1px solid {{ navBorder }};">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 0 24px; height: 68px; display: flex; align-items: center; justify-content: space-between;">
+      <a onClick="{{ goHome }}" style="font-family: 'Fraunces', serif; font-size: 23px; font-weight: 700; letter-spacing: -0.01em; cursor: pointer; color: {{ navInk }}; display: flex; align-items: baseline; gap: 8px;">
+        RIDLDI
+        <span style="font-family: 'Hanken Grotesk', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: {{ navMuted }};">Initiative</span>
+      </a>
+      <nav style="display: flex; align-items: center; gap: 34px;" data-desktop-nav>
+        <sc-for list="{{ navLinks }}" as="link" hint-placeholder-count="6">
+          <a onClick="{{ link.onClick }}" style="font-size: 14.5px; font-weight: 500; cursor: pointer; transition: opacity 0.2s; color: {{ navInk }};" style-hover="opacity: 0.6;">{{ link.label }}</a>
+        </sc-for>
+        <a onClick="{{ goApply }}" style="font-size: 14px; font-weight: 600; padding: 10px 20px; borderRadius: 999px; cursor: pointer; transition: transform 0.15s, box-shadow 0.2s; background: #B5532A; color: #FAF7F1; box-shadow: 0 2px 14px rgba(181,83,42,0.32);" style-hover="transform: translateY(-1px); box-shadow: 0 6px 20px rgba(181,83,42,0.42);">Apply as a Fellow</a>
+      </nav>
+      <button onClick="{{ toggleMenu }}" aria-label="Menu" style="display: none; background: none; border: none; cursor: pointer; padding: 8px; color: {{ navInk }};" data-mobile-toggle>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; z-index: 99; background: #FAF7F1; padding: 90px 28px 40px; display: flex; flex-direction: column; gap: 6px; animation: ridFade 0.2s ease;">
+      <sc-for list="{{ navLinks }}" as="link" hint-placeholder-count="6">
+        <a onClick="{{ link.onClick }}" style="font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600; color: #1A1815; padding: 12px 0; border-bottom: 1px solid #E7E1D7; cursor: pointer;">{{ link.label }}</a>
+      </sc-for>
+      <a onClick="{{ goApply }}" style="margin-top: 22px; text-align: center; padding: 16px; borderRadius: 999px; background: #B5532A; color: #FAF7F1; font-weight: 600; font-size: 16px; cursor: pointer;">Apply as a Fellow</a>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <main>
+
+    <section style="position: relative; width: 100%; overflow: hidden;">
+      <div style="position: absolute; inset: 0; background-image: url('assets/hero-bg.png'); background-size: cover; background-position: center;"></div>
+      <div style="position: absolute; inset: 0; background: linear-gradient(106deg, rgba(26,24,21,0.92) 0%, rgba(26,24,21,0.62) 50%, rgba(26,24,21,0.20) 100%);"></div>
+      <div style="position: relative; z-index: 2; max-width: 1240px; margin: 0 auto; padding: 150px 24px 88px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center;">
+        <div style="max-width: 760px; animation: ridFadeUp 0.9s cubic-bezier(0.22,1,0.36,1) both;">
+          <p style="font-size: 12.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; color: #F0A06A; margin: 0 0 26px;">Rural Innovation &amp; Digital Literacy Development Initiative · Abuja, Nigeria</p>
+          <h1 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(56px, 9vw, 108px); line-height: 0.92; letter-spacing: -0.025em; color: #FAF7F1; margin: 0 0 28px;">Not saving.<br/><span style="color: #F0A06A;">Unlocking.</span></h1>
+          <p style="font-size: clamp(17px, 2vw, 21px); line-height: 1.6; color: rgba(250,247,241,0.82); max-width: 560px; margin: 0 0 38px;">From rural villages to urban neighbourhoods across Nigeria — we build digital capacity, back entrepreneurs, and defend communities on the climate frontline.</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 14px;">
+            <a onClick="{{ goApply }}" style="display: inline-flex; align-items: center; gap: 9px; padding: 15px 28px; borderRadius: 999px; background: #B5532A; color: #FAF7F1; font-weight: 600; font-size: 15px; cursor: pointer; transition: transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(181,83,42,0.4);" style-hover="transform: translateY(-2px); box-shadow: 0 10px 28px rgba(181,83,42,0.5);">Apply as a Fellow
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a onClick="{{ navPartner }}" style="display: inline-flex; align-items: center; gap: 9px; padding: 15px 28px; borderRadius: 999px; border: 1.5px solid rgba(250,247,241,0.4); color: #FAF7F1; font-weight: 600; font-size: 15px; cursor: pointer; transition: background 0.2s, border-color 0.2s;" style-hover="background: rgba(250,247,241,0.1); border-color: rgba(250,247,241,0.7);">Partner with us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="background: #1A1815; padding: 0;">
+      <div style="max-width: 1240px; margin: 0 auto; padding: 52px 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px;" data-stats-strip>
+        <sc-for list="{{ heroStats }}" as="s" hint-placeholder-count="4">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="font-family: 'Fraunces', serif; font-size: clamp(34px, 4vw, 46px); font-weight: 600; line-height: 1; color: #F0A06A;">{{ s.value }}</div>
+            <div style="font-size: 12.5px; letter-spacing: 0.06em; color: rgba(250,247,241,0.62); line-height: 1.4;">{{ s.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="about" style="scroll-margin-top: 80px; padding: 100px 24px;">
+      <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 72px; align-items: start;" data-about-grid>
+        <div>
+          <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #B5532A; margin: 0 0 18px;">Who we are</p>
+          <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.04; letter-spacing: -0.025em; margin: 0;">Innovation has no postcode.</h2>
+        </div>
+        <div>
+          <p style="font-size: clamp(18px, 2vw, 22px); line-height: 1.6; color: #2A2723; margin: 0 0 26px; font-weight: 500;">RIDLDI is a Nigerian non-profit equipping people — from Plateau State farmlands to Lagos suburbs — with the digital skills, entrepreneurial backing, and climate resilience to author their own futures.</p>
+          <p style="font-size: 16.5px; line-height: 1.75; color: #4A4540; margin: 0 0 32px;">We don't believe communities need saving. We believe they need unlocking. Registered with the Corporate Affairs Commission in Abuja in 2026, we run hands-on training programmes, entrepreneurship incubators, and community-led climate adaptation — meeting people where they are, with tools that work.</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; padding-top: 30px; border-top: 1px solid #E7E1D7;">
+            <div>
+              <div style="font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600; color: #B5532A; line-height: 1;">2026</div>
+              <div style="font-size: 13px; color: #7A7570; margin-top: 6px;">CAC Registered, Abuja</div>
+            </div>
+            <div>
+              <div style="font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600; color: #B5532A; line-height: 1;">Dual</div>
+              <div style="font-size: 13px; color: #7A7570; margin-top: 6px;">Human + climate missions</div>
+            </div>
+            <div>
+              <div style="font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600; color: #B5532A; line-height: 1;">Hamzury</div>
+              <div style="font-size: 13px; color: #7A7570; margin-top: 6px;">Founding innovation partner</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding: 0;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr;" data-missions-grid>
+        <div style="background: #B5532A; color: #FAF7F1; padding: 84px 56px;">
+          <p style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: rgba(250,247,241,0.6); margin: 0 0 24px;">Mission one — The Earth</p>
+          <h3 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(32px, 3.6vw, 46px); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 22px;">Human Potential</h3>
+          <p style="font-size: 17px; line-height: 1.65; color: rgba(250,247,241,0.84); max-width: 420px; margin: 0 0 30px;">Digital skills, entrepreneurship, and talent development — reaching communities across rural farmlands and urban neighbourhoods alike.</p>
+          <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 34px;">
+            <sc-for list="{{ earthList }}" as="item" hint-placeholder-count="4">
+              <div style="display: flex; align-items: center; gap: 12px; font-size: 15px; color: rgba(250,247,241,0.92);">
+                <span style="width: 6px; height: 6px; borderRadius: 999px; background: #F0A06A; flex-shrink: 0;"></span>{{ item }}
+              </div>
+            </sc-for>
+          </div>
+          <a onClick="{{ navPrograms }}" style="display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: #FAF7F1; cursor: pointer; border-bottom: 1.5px solid rgba(250,247,241,0.5); padding-bottom: 3px;">Explore the programmes →</a>
+        </div>
+        <div style="background: #3A5A78; color: #FAF7F1; padding: 84px 56px;">
+          <p style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: rgba(250,247,241,0.6); margin: 0 0 24px;">Mission two — The Sky</p>
+          <h3 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(32px, 3.6vw, 46px); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 22px;">Climate Action</h3>
+          <p style="font-size: 17px; line-height: 1.65; color: rgba(250,247,241,0.84); max-width: 420px; margin: 0 0 30px;">Defending communities on the frontline of the climate crisis — farmers, fisherfolk, urban residents. They didn't create this crisis, but they absorb it first.</p>
+          <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 34px;">
+            <sc-for list="{{ skyList }}" as="item" hint-placeholder-count="4">
+              <div style="display: flex; align-items: center; gap: 12px; font-size: 15px; color: rgba(250,247,241,0.92);">
+                <span style="width: 6px; height: 6px; borderRadius: 999px; background: #9DC3E6; flex-shrink: 0;"></span>{{ item }}
+              </div>
+            </sc-for>
+          </div>
+          <a onClick="{{ navAbout }}" style="display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: #FAF7F1; cursor: pointer; border-bottom: 1.5px solid rgba(250,247,241,0.5); padding-bottom: 3px;">Our climate position →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="impact" style="scroll-margin-top: 80px; padding: 100px 24px; background: #F0EBE3;">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        <div style="max-width: 640px; margin-bottom: 56px;">
+          <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #B5532A; margin: 0 0 18px;">Our impact</p>
+          <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.04; letter-spacing: -0.025em; margin: 0 0 18px;">Measured in people, not promises.</h2>
+          <p style="font-size: 17px; line-height: 1.7; color: #4A4540; margin: 0;">Every number here is a person who walked into a training room and walked out with a new skill, a new income stream, or a new way to protect their community.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #DDD8CF; border: 1px solid #DDD8CF;" data-impact-grid>
+          <sc-for list="{{ bigStats }}" as="s" hint-placeholder-count="4">
+            <div style="background: #F0EBE3; padding: 34px 28px;">
+              <div style="font-family: 'Fraunces', serif; font-size: clamp(40px, 5vw, 60px); font-weight: 600; line-height: 1; color: {{ s.color }};">{{ s.value }}</div>
+              <div style="font-size: 14px; font-weight: 600; color: #1A1815; margin-top: 16px;">{{ s.label }}</div>
+              <div style="font-size: 13.5px; line-height: 1.55; color: #7A7570; margin-top: 6px;">{{ s.sub }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <p style="font-size: 12.5px; color: #A39E96; margin-top: 18px; font-style: italic;">Figures reflect our Jos 2025 pilot cohort and are indicative placeholders — swap in verified numbers as the programme scales.</p>
+      </div>
+    </section>
+
+    <section id="programs" style="scroll-margin-top: 80px; padding: 100px 24px;">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 24px; margin-bottom: 52px;">
+          <div style="max-width: 620px;">
+            <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #B5532A; margin: 0 0 18px;">Programs &amp; trainings</p>
+            <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.04; letter-spacing: -0.025em; margin: 0 0 18px;">Ten tracks. One launchpad.</h2>
+            <p style="font-size: 17px; line-height: 1.7; color: #4A4540; margin: 0;">Industry-aligned, project-based curricula taught by practitioners. Choose the track that fits your ambition — every cohort blends technical skill with entrepreneurship.</p>
+          </div>
+          <a onClick="{{ goApply }}" style="display: inline-flex; align-items: center; gap: 9px; padding: 14px 26px; borderRadius: 999px; background: #1A1815; color: #FAF7F1; font-weight: 600; font-size: 15px; cursor: pointer; transition: transform 0.15s; flex-shrink: 0;" style-hover="transform: translateY(-2px);">Apply for a track
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;" data-tracks-grid>
+          <sc-for list="{{ tracks }}" as="t" hint-placeholder-count="10">
+            <div style="display: flex; gap: 22px; align-items: flex-start; padding: 28px 30px; border: 1px solid #E7E1D7; borderRadius: 18px; background: #FFFFFF; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;" style-hover="border-color: #B5532A; transform: translateY(-3px); box-shadow: 0 14px 34px rgba(26,24,21,0.08);">
+              <div style="font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; color: #B5532A; width: 40px; height: 40px; borderRadius: 999px; background: #FAF1EB; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">{{ t.num }}</div>
+              <div>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px;">
+                  <h4 style="font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; margin: 0; letter-spacing: -0.01em;">{{ t.title }}</h4>
+                  <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #B5532A; background: #FAF1EB; padding: 4px 9px; borderRadius: 999px;">{{ t.level }}</span>
+                </div>
+                <p style="font-size: 14.5px; line-height: 1.6; color: #4A4540; margin: 0 0 14px;">{{ t.desc }}</p>
+                <div style="font-size: 12.5px; color: #7A7570; display: flex; gap: 16px; flex-wrap: wrap;">
+                  <span>⏱ {{ t.duration }}</span>
+                  <span>● {{ t.format }}</span>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="fellowship" style="scroll-margin-top: 80px; padding: 0;">
+      <div style="background: #1A1815; color: #FAF7F1;">
+        <div style="max-width: 1240px; margin: 0 auto; padding: 96px 24px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 64px; align-items: center;" data-fellowship-grid>
+          <div>
+            <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #F0A06A; margin: 0 0 20px;">The RIDLDI Fellowship</p>
+            <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(36px, 5vw, 60px); line-height: 1.02; letter-spacing: -0.025em; margin: 0 0 24px;">A fully-supported path into the digital economy.</h2>
+            <p style="font-size: 18px; line-height: 1.65; color: rgba(250,247,241,0.78); margin: 0 0 36px; max-width: 520px;">The Fellowship is our flagship cohort programme. Selected fellows receive hands-on training, mentorship, a project portfolio, and a direct line to our partner network — at no cost to those who qualify.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-bottom: 40px; max-width: 520px;">
+              <sc-for list="{{ fellowshipPerks }}" as="p" hint-placeholder-count="4">
+                <div style="display: flex; gap: 13px; align-items: flex-start;">
+                  <span style="color: #F0A06A; margin-top: 2px; flex-shrink: 0;">{{ p.icon }}</span>
+                  <div>
+                    <div style="font-weight: 600; font-size: 15.5px; margin-bottom: 3px;">{{ p.title }}</div>
+                    <div style="font-size: 13.5px; line-height: 1.5; color: rgba(250,247,241,0.6);">{{ p.sub }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <a onClick="{{ goApply }}" style="display: inline-flex; align-items: center; gap: 9px; padding: 16px 30px; borderRadius: 999px; background: #B5532A; color: #FAF7F1; font-weight: 600; font-size: 16px; cursor: pointer; transition: transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(181,83,42,0.4);" style-hover="transform: translateY(-2px); box-shadow: 0 10px 28px rgba(181,83,42,0.5);">Start your application
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="border: 1px solid rgba(250,247,241,0.16); borderRadius: 20px; padding: 30px;">
+              <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(250,247,241,0.5); margin-bottom: 22px; font-weight: 600;">How selection works</div>
+              <div style="display: flex; flex-direction: column; gap: 20px;">
+                <sc-for list="{{ fellowshipSteps }}" as="st" hint-placeholder-count="4">
+                  <div style="display: flex; gap: 16px; align-items: flex-start;">
+                    <div style="font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; color: #1A1815; background: #F0A06A; width: 30px; height: 30px; borderRadius: 999px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">{{ st.n }}</div>
+                    <div>
+                      <div style="font-weight: 600; font-size: 15.5px; margin-bottom: 3px;">{{ st.title }}</div>
+                      <div style="font-size: 13.5px; line-height: 1.5; color: rgba(250,247,241,0.62);">{{ st.sub }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="border-radius: 20px; padding: 24px 30px; background: #B5532A; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+              <div>
+                <div style="font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600;">Cohort 02 — now open</div>
+                <div style="font-size: 13.5px; color: rgba(250,247,241,0.78); margin-top: 3px;">Applications close 30 September 2026</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="scroll-margin-top: 80px; padding: 100px 24px; background: #FAF7F1;">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        <div style="max-width: 640px; margin-bottom: 48px;">
+          <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #B5532A; margin: 0 0 18px;">On the ground · Jos, Plateau State · 2025</p>
+          <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.04; letter-spacing: -0.025em; margin: 0 0 18px;">Where the work happens.</h2>
+          <p style="font-size: 17px; line-height: 1.7; color: #4A4540; margin: 0;">In partnership with <strong style="color: #1A1815;">Hamzury Innovation</strong>, RIDLDI delivered its first major training programme in Jos — equipping over 60 participants from rural and urban communities with practical digital skills.</p>
+        </div>
+        <figure style="margin: 0 0 16px;">
+          <image-slot id="jos-hero" shape="rounded" radius="20" placeholder="Drop your Jos programme hero photo (wide, 16:7)" style="width: 100%; aspect-ratio: 16/7; background: #E7E1D7;"></image-slot>
+          <figcaption style="margin-top: 12px; font-size: 13px; color: #7A7570; letter-spacing: 0.01em;">Participants at the RIDLDI–Hamzury Innovation training hub — Jos, Plateau State, May 2025.</figcaption>
+        </figure>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;" data-photo-grid>
+          <figure style="margin: 0;">
+            <image-slot id="jos-2" shape="rounded" radius="18" placeholder="Drop a photo (4:3)" style="width: 100%; aspect-ratio: 4/3; background: #E7E1D7;"></image-slot>
+            <figcaption style="margin-top: 12px; font-size: 13px; color: #7A7570;">Hands-on hardware session — in collaboration with Hamzury Innovation.</figcaption>
+          </figure>
+          <figure style="margin: 0;">
+            <image-slot id="jos-3" shape="rounded" radius="18" placeholder="Drop a photo (4:3)" style="width: 100%; aspect-ratio: 4/3; background: #E7E1D7;"></image-slot>
+            <figcaption style="margin-top: 12px; font-size: 13px; color: #7A7570;">Group session in progress — over 60 participants across two days.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="stories" style="scroll-margin-top: 80px; padding: 100px 24px; background: #F0EBE3;">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 24px; margin-bottom: 52px;">
+          <div style="max-width: 620px;">
+            <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #B5532A; margin: 0 0 18px;">Success stories</p>
+            <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.04; letter-spacing: -0.025em; margin: 0;">Lives, in their own words.</h2>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;" data-stories-grid>
+          <sc-for list="{{ testimonials }}" as="t" hint-placeholder-count="3">
+            <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E7E1D7; borderRadius: 20px; padding: 34px 30px; display: flex; flex-direction: column;">
+              <div style="color: #F0A06A; font-family: 'Fraunces', serif; font-size: 52px; line-height: 0.6; height: 28px;">“</div>
+              <blockquote style="margin: 0 0 26px; font-size: 16.5px; line-height: 1.6; color: #2A2723; flex: 1;">{{ t.quote }}</blockquote>
+              <figcaption style="display: flex; align-items: center; gap: 14px; padding-top: 22px; border-top: 1px solid #E7E1D7;">
+                <image-slot id="{{ t.slotId }}" shape="circle" placeholder="Photo" style="width: 50px; height: 50px; background: #E7E1D7; flex-shrink: 0;"></image-slot>
+                <div>
+                  <div style="font-weight: 600; font-size: 15px; color: #1A1815;">{{ t.name }}</div>
+                  <div style="font-size: 13px; color: #7A7570;">{{ t.role }}</div>
+                </div>
+              </figcaption>
+            </figure>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="partners" style="scroll-margin-top: 80px; padding: 96px 24px; background: #FAF7F1;">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        <div style="text-align: center; max-width: 680px; margin: 0 auto 52px;">
+          <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #B5532A; margin: 0 0 18px;">Partners &amp; sponsors</p>
+          <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(32px, 4.2vw, 50px); line-height: 1.05; letter-spacing: -0.025em; margin: 0 0 16px;">Built with allies who believe in unlocking.</h2>
+          <p style="font-size: 16.5px; line-height: 1.7; color: #4A4540; margin: 0;">From innovation hubs to corporate sponsors, our partners make the work possible. Yours could be next.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; background: #E7E1D7; border: 1px solid #E7E1D7; border-radius: 16px; overflow: hidden;" data-partners-grid>
+          <div style="background: #FFFFFF; padding: 32px 18px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: #1A1815; text-align: center; line-height: 1.1;">Hamzury<br/><span style="font-size: 12px; font-weight: 500; color: #7A7570; letter-spacing: 0.04em;">Innovation</span></span>
+          </div>
+          <sc-for list="{{ partnerSlots }}" as="p" hint-placeholder-count="5">
+            <image-slot id="{{ p.id }}" shape="rect" fit="contain" placeholder="Logo" style="background: #FFFFFF; padding: 22px; height: 100%; min-height: 96px;"></image-slot>
+          </sc-for>
+        </div>
+        <div style="text-align: center; margin-top: 40px;">
+          <a onClick="{{ navContact }}" style="display: inline-flex; align-items: center; gap: 9px; padding: 14px 28px; borderRadius: 999px; border: 1.5px solid #1A1815; color: #1A1815; font-weight: 600; font-size: 15px; cursor: pointer; transition: background 0.2s, color 0.2s;" style-hover="background: #1A1815; color: #FAF7F1;">Become a partner
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding: 76px 24px; background: #1A1815; color: #FAF7F1;">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        <p style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: rgba(250,247,241,0.45); margin: 0 0 36px; text-align: center;">Media coverage &amp; recognition</p>
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 36px; align-items: center;" data-media-grid>
+          <sc-for list="{{ mediaOutlets }}" as="m" hint-placeholder-count="5">
+            <div style="font-family: 'Fraunces', serif; font-size: clamp(17px, 1.8vw, 22px); font-weight: 600; color: rgba(250,247,241,0.7); text-align: center; letter-spacing: -0.01em;">{{ m }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="team" style="scroll-margin-top: 80px; padding: 100px 24px; background: #FAF7F1;">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        <div style="max-width: 640px; margin-bottom: 52px;">
+          <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #B5532A; margin: 0 0 18px;">Leadership</p>
+          <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.04; letter-spacing: -0.025em; margin: 0 0 18px;">The people behind the mission.</h2>
+          <p style="font-size: 17px; line-height: 1.7; color: #4A4540; margin: 0;">A team of technologists, educators, and community organisers who believe Nigeria's next breakthrough is already living in a village or a city street.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;" data-team-grid>
+          <sc-for list="{{ team }}" as="m" hint-placeholder-count="4">
+            <div>
+              <image-slot id="{{ m.slotId }}" shape="rounded" radius="18" placeholder="Drop portrait" style="width: 100%; aspect-ratio: 3/3.4; background: #E7E1D7; margin-bottom: 16px;"></image-slot>
+              <div style="font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; letter-spacing: -0.01em;">{{ m.name }}</div>
+              <div style="font-size: 13.5px; color: #B5532A; font-weight: 600; margin-top: 3px;">{{ m.role }}</div>
+              <div style="font-size: 13.5px; line-height: 1.55; color: #7A7570; margin-top: 8px;">{{ m.bio }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="events" style="scroll-margin-top: 80px; padding: 100px 24px; background: #3A5A78; color: #FAF7F1;">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 24px; margin-bottom: 48px;">
+          <div style="max-width: 620px;">
+            <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #9DC3E6; margin: 0 0 18px;">Events &amp; workshops</p>
+            <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.04; letter-spacing: -0.025em; margin: 0;">Come build with us.</h2>
+          </div>
+          <a onClick="{{ navContact }}" style="font-size: 15px; font-weight: 600; color: #FAF7F1; cursor: pointer; border-bottom: 1.5px solid rgba(250,247,241,0.5); padding-bottom: 3px;">Get event updates →</a>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0;" data-events-list>
+          <sc-for list="{{ events }}" as="e" hint-placeholder-count="3">
+            <div style="display: grid; grid-template-columns: 130px 1fr auto; gap: 28px; align-items: center; padding: 26px 0; border-top: 1px solid rgba(250,247,241,0.16);">
+              <div>
+                <div style="font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600; line-height: 1;">{{ e.day }}</div>
+                <div style="font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9DC3E6; margin-top: 4px;">{{ e.month }}</div>
+              </div>
+              <div>
+                <div style="font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; margin-bottom: 6px;">{{ e.title }}</div>
+                <div style="font-size: 14px; color: rgba(250,247,241,0.7);">{{ e.meta }}</div>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #1A1815; background: #9DC3E6; padding: 7px 14px; borderRadius: 999px; white-space: nowrap;">{{ e.tag }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" style="scroll-margin-top: 80px; padding: 100px 24px; background: #FAF7F1;">
+      <div style="max-width: 920px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 52px;">
+          <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #B5532A; margin: 0 0 18px;">Frequently asked</p>
+          <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.04; letter-spacing: -0.025em; margin: 0;">Questions, answered.</h2>
+        </div>
+        <div style="display: flex; flex-direction: column;" data-faq-list>
+          <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="6">
+            <div style="border-top: 1px solid #E7E1D7;">
+              <button onClick="{{ f.onToggle }}" style="width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 26px 4px; background: none; border: none; cursor: pointer; text-align: left;">
+                <span style="font-family: 'Fraunces', serif; font-size: clamp(18px, 2.2vw, 23px); font-weight: 600; color: #1A1815; line-height: 1.3;">{{ f.q }}</span>
+                <span style="font-size: 26px; color: #B5532A; flex-shrink: 0; line-height: 1; transition: transform 0.2s; transform: {{ f.rot }};">+</span>
+              </button>
+              <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}">
+                <p style="margin: 0; padding: 0 4px 28px; font-size: 16px; line-height: 1.7; color: #4A4540; max-width: 760px;">{{ f.a }}</p>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="support" style="scroll-margin-top: 80px; padding: 96px 24px; background: #B5532A; color: #FAF7F1;">
+      <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center;" data-support-grid>
+        <div>
+          <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: rgba(250,247,241,0.6); margin: 0 0 18px;">Support the work</p>
+          <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(32px, 4.2vw, 50px); line-height: 1.04; letter-spacing: -0.025em; margin: 0 0 20px;">Fund a fellow. Back a community.</h2>
+          <p style="font-size: 17px; line-height: 1.65; color: rgba(250,247,241,0.85); margin: 0 0 30px; max-width: 460px;">Sponsorships and grants underwrite training, equipment, and climate projects. Whether you're a corporate partner or an individual supporter, your contribution unlocks potential directly.</p>
+          <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+            <a onClick="{{ navContact }}" style="display: inline-flex; align-items: center; gap: 9px; padding: 15px 28px; borderRadius: 999px; background: #FAF7F1; color: #B5532A; font-weight: 600; font-size: 15px; cursor: pointer; transition: transform 0.15s;" style-hover="transform: translateY(-2px);">Discuss sponsorship</a>
+            <a href="#" style="display: inline-flex; align-items: center; gap: 9px; padding: 15px 28px; borderRadius: 999px; border: 1.5px solid rgba(250,247,241,0.5); color: #FAF7F1; font-weight: 600; font-size: 15px; cursor: pointer; transition: background 0.2s;" style-hover="background: rgba(250,247,241,0.12);">Download brochure (PDF)</a>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <sc-for list="{{ supportTiers }}" as="s" hint-placeholder-count="4">
+            <div style="background: rgba(250,247,241,0.1); border: 1px solid rgba(250,247,241,0.18); borderRadius: 16px; padding: 24px;">
+              <div style="font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600;">{{ s.amount }}</div>
+              <div style="font-size: 14px; line-height: 1.5; color: rgba(250,247,241,0.82); margin-top: 8px;">{{ s.impact }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" style="scroll-margin-top: 80px; padding: 100px 24px; background: #FAF7F1;">
+      <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 64px;" data-contact-grid>
+        <div>
+          <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #B5532A; margin: 0 0 18px;">Partnership inquiries</p>
+          <h2 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(34px, 4.2vw, 52px); line-height: 1.04; letter-spacing: -0.025em; margin: 0 0 22px;">Let's build something together.</h2>
+          <p style="font-size: 16.5px; line-height: 1.7; color: #4A4540; margin: 0 0 36px; max-width: 380px;">Funding partner, community organisation, sponsor, or prospective fellow — tell us how you'd like to work with us. We read every message.</p>
+          <div style="display: flex; flex-direction: column; gap: 18px;">
+            <a href="/cdn-cgi/l/email-protection#45372c2129212c2b2c312c24312c3320052228242c296b262a28" style="display: flex; align-items: center; gap: 16px; color: #1A1815;">
+              <span style="width: 44px; height: 44px; borderRadius: 999px; border: 1.5px solid #DDD8CF; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></span>
+              <span style="font-size: 15px; font-weight: 500;"><span class="__cf_email__" data-cfemail="b3c1dad7dfd7dadddac7dad2c7dac5d6f3d4ded2dadf9dd0dcde">[email&#160;protected]</span></span>
+            </a>
+            <div style="display: flex; align-items: center; gap: 16px; color: #1A1815;">
+              <span style="width: 44px; height: 44px; borderRadius: 999px; border: 1.5px solid #DDD8CF; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+              <span style="font-size: 15px; font-weight: 500;">Abuja, FCT, Nigeria</span>
+            </div>
+          </div>
+          <div style="margin-top: 40px; padding-top: 32px; border-top: 1px solid #E7E1D7;">
+            <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #7A7570; margin-bottom: 14px;">Newsletter</div>
+            <sc-if value="{{ newsletterDone }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size: 15px; color: #1A8A5B; font-weight: 600; margin: 0;">✓ You're subscribed. Welcome aboard.</p>
+            </sc-if>
+            <sc-if value="{{ newsletterOpen }}" hint-placeholder-val="{{ true }}">
+              <form onSubmit="{{ subscribe }}" style="display: flex; gap: 10px;">
+                <input type="email" value="{{ newsletterEmail }}" onChange="{{ setNewsletter }}" placeholder="your@email.com" style="flex: 1; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 13px 15px; font-size: 14.5px; color: #1A1815; outline: none;" />
+                <button type="submit" style="padding: 13px 22px; borderRadius: 10px; background: #1A1815; color: #FAF7F1; font-weight: 600; font-size: 14.5px; border: none; cursor: pointer; white-space: nowrap;">Subscribe</button>
+              </form>
+            </sc-if>
+          </div>
+        </div>
+        <div>
+          <sc-if value="{{ contactSent }}" hint-placeholder-val="{{ false }}">
+            <div style="background: #F0EBE3; border: 1.5px solid #DDD8CF; borderRadius: 22px; padding: 56px 40px; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+              <div style="width: 56px; height: 56px; borderRadius: 999px; background: #1A8A5B; display: flex; align-items: center; justify-content: center; margin-bottom: 22px;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <p style="font-family: 'Fraunces', serif; font-size: 27px; font-weight: 600; margin: 0 0 10px; color: #1A1815;">Message received.</p>
+              <p style="font-size: 15px; color: #4A4540; margin: 0; max-width: 320px; line-height: 1.6;">Thank you for reaching out. Our partnerships team will be in touch shortly.</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{ contactOpen }}" hint-placeholder-val="{{ true }}">
+            <form onSubmit="{{ submitContact }}" style="background: #F0EBE3; border: 1.5px solid #DDD8CF; borderRadius: 22px; padding: 36px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px;" data-contact-row>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <label style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #7A7570;">Name</label>
+                  <input required value="{{ contact.name }}" onChange="{{ setContact.name }}" placeholder="Your name" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 13px 15px; font-size: 14.5px; color: #1A1815; outline: none;" />
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <label style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #7A7570;">Email</label>
+                  <input required type="email" value="{{ contact.email }}" onChange="{{ setContact.email }}" placeholder="your@email.com" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 13px 15px; font-size: 14.5px; color: #1A1815; outline: none;" />
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px;" data-contact-row>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <label style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #7A7570;">Organisation</label>
+                  <input value="{{ contact.org }}" onChange="{{ setContact.org }}" placeholder="Company or NGO" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 13px 15px; font-size: 14.5px; color: #1A1815; outline: none;" />
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <label style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #7A7570;">I'm reaching out as</label>
+                  <select value="{{ contact.role }}" onChange="{{ setContact.role }}" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 13px 15px; font-size: 14.5px; color: #1A1815; outline: none; appearance: none;">
+                    <option value="">Select…</option>
+                    <option value="partner">A funding / corporate partner</option>
+                    <option value="sponsor">A sponsor</option>
+                    <option value="community">A community organisation</option>
+                    <option value="media">Media / press</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
+                <label style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #7A7570;">Message</label>
+                <textarea required value="{{ contact.message }}" onChange="{{ setContact.message }}" rows="5" placeholder="How would you like to work with us?" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 13px 15px; font-size: 14.5px; color: #1A1815; outline: none; resize: vertical; font-family: inherit;"></textarea>
+              </div>
+              <button type="submit" style="width: 100%; padding: 16px; borderRadius: 12px; background: #1A1815; color: #FAF7F1; font-weight: 600; font-size: 15px; border: none; cursor: pointer; transition: opacity 0.2s;" style-hover="opacity: 0.88;">Send message</button>
+            </form>
+          </sc-if>
+        </div>
+      </div>
+    </section>
+
+    <div id="__after_home" style="display: none;"></div>
+
+    <footer data-section="footer" style="background: #1A1815; color: #FAF7F1; padding: 72px 24px 36px;">
+      <div style="max-width: 1240px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 48px; border-bottom: 1px solid rgba(250,247,241,0.12);" data-footer-grid>
+          <div>
+            <div style="font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; margin-bottom: 14px;">RIDLDI</div>
+            <p style="font-size: 14.5px; line-height: 1.65; color: rgba(250,247,241,0.6); max-width: 290px; margin: 0 0 22px;">Rural Innovation &amp; Digital Literacy Development Initiative. Unlocking human potential and defending communities on the climate frontline.</p>
+            <div style="display: flex; gap: 12px;">
+              <sc-for list="{{ socials }}" as="s" hint-placeholder-count="4">
+                <a href="{{ s.href }}" aria-label="{{ s.label }}" style="width: 38px; height: 38px; borderRadius: 999px; border: 1px solid rgba(250,247,241,0.22); display: flex; align-items: center; justify-content: center; color: rgba(250,247,241,0.75); transition: background 0.2s, color 0.2s;" style-hover="background: #B5532A; color: #FAF7F1; border-color: #B5532A;">{{ s.icon }}</a>
+              </sc-for>
+            </div>
+          </div>
+          <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="3">
+            <div>
+              <div style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; color: rgba(250,247,241,0.4); margin-bottom: 18px;">{{ col.title }}</div>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <sc-for list="{{ col.links }}" as="l" hint-placeholder-count="4">
+                  <a onClick="{{ l.onClick }}" style="font-size: 14.5px; color: rgba(250,247,241,0.72); cursor: pointer; transition: color 0.2s;" style-hover="color: #F0A06A;">{{ l.label }}</a>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; padding-top: 28px; align-items: center;">
+          <span style="font-size: 13px; color: rgba(250,247,241,0.5);">© 2026 RIDLDI · CAC Registered · Abuja, FCT, Nigeria</span>
+          <span style="font-size: 13px; color: rgba(250,247,241,0.5);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3b1aaa7afa7aaadaab7aaa2b7aab5a683a4aea2aaafeda0acae">[email&#160;protected]</a></span>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ isApply }}" hint-placeholder-val="{{ false }}">
+    <main style="background: #FAF7F1; min-height: 100vh;">
+
+      <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+        <section style="padding: 160px 24px 120px; min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+          <div style="max-width: 620px; text-align: center;">
+            <div style="width: 76px; height: 76px; borderRadius: 999px; background: #1A8A5B; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <h1 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(38px, 6vw, 60px); line-height: 1.04; letter-spacing: -0.025em; margin: 0 0 20px;">Application received.</h1>
+            <p style="font-size: 18px; line-height: 1.65; color: #4A4540; margin: 0 0 14px;">Thank you for applying to the RIDLDI Fellowship, <strong style="color: #1A1815;">{{ applicantName }}</strong>. We've sent a confirmation to your email.</p>
+            <p style="font-size: 16px; line-height: 1.65; color: #7A7570; margin: 0 0 40px;">Our team reviews every application personally. You'll hear from us within 10 working days about the skills-screening stage.</p>
+            <a onClick="{{ goHome }}" style="display: inline-flex; align-items: center; gap: 9px; padding: 15px 30px; borderRadius: 999px; background: #1A1815; color: #FAF7F1; font-weight: 600; font-size: 15px; cursor: pointer;">Back to homepage</a>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ applyOpen }}" hint-placeholder-val="{{ true }}">
+        <section style="padding: 124px 24px 56px; background: #1A1815; color: #FAF7F1;">
+          <div style="max-width: 1100px; margin: 0 auto;">
+            <a onClick="{{ goHome }}" style="display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 500; color: rgba(250,247,241,0.6); cursor: pointer; margin-bottom: 28px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Back to RIDLDI</a>
+            <p style="font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #F0A06A; margin: 0 0 16px;">Fellowship application · Cohort 02</p>
+            <h1 style="font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(40px, 6vw, 68px); line-height: 1.0; letter-spacing: -0.025em; margin: 0 0 18px;">Apply as a Fellow</h1>
+            <p style="font-size: 18px; line-height: 1.6; color: rgba(250,247,241,0.78); margin: 0; max-width: 560px;">It takes about 10 minutes. There are no application fees — we select on motivation and potential. Applications for Cohort 02 close 30 September 2026.</p>
+          </div>
+        </section>
+
+        <section style="padding: 64px 24px 110px;">
+          <div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr; gap: 48px; align-items: start;" data-apply-grid>
+            <form onSubmit="{{ submit }}" style="display: flex; flex-direction: column; gap: 44px;">
+
+              <fieldset style="border: none; padding: 0; margin: 0;">
+                <legend style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                  <span style="font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: #FAF7F1; background: #B5532A; width: 30px; height: 30px; borderRadius: 999px; display: inline-flex; align-items: center; justify-content: center;">1</span>
+                  <span style="font-family: 'Fraunces', serif; font-size: 23px; font-weight: 600; color: #1A1815;">Personal details</span>
+                </legend>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" data-apply-row>
+                  <label style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">Full name <span style="color: #B5532A;">*</span></span>
+                    <input required value="{{ f.fullName }}" onChange="{{ setF.fullName }}" placeholder="e.g. Amina Yusuf" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 14px 15px; font-size: 15px; color: #1A1815; outline: none;" />
+                  </label>
+                  <label style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">Email address <span style="color: #B5532A;">*</span></span>
+                    <input required type="email" value="{{ f.email }}" onChange="{{ setF.email }}" placeholder="your@email.com" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 14px 15px; font-size: 15px; color: #1A1815; outline: none;" />
+                  </label>
+                  <label style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">Phone number <span style="color: #B5532A;">*</span></span>
+                    <input required value="{{ f.phone }}" onChange="{{ setF.phone }}" placeholder="+234 ..." style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 14px 15px; font-size: 15px; color: #1A1815; outline: none;" />
+                  </label>
+                  <label style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">Gender</span>
+                    <select value="{{ f.gender }}" onChange="{{ setF.gender }}" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 14px 15px; font-size: 15px; color: #1A1815; outline: none; appearance: none;">
+                      <option value="">Select…</option>
+                      <option value="female">Female</option>
+                      <option value="male">Male</option>
+                      <option value="other">Other</option>
+                      <option value="prefer-not">Prefer not to say</option>
+                    </select>
+                  </label>
+                  <label style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">Date of birth <span style="color: #B5532A;">*</span></span>
+                    <input required type="date" value="{{ f.dob }}" onChange="{{ setF.dob }}" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 13px 15px; font-size: 15px; color: #1A1815; outline: none;" />
+                  </label>
+                  <label style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">Location (city, state) <span style="color: #B5532A;">*</span></span>
+                    <input required value="{{ f.location }}" onChange="{{ setF.location }}" placeholder="e.g. Jos, Plateau" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 14px 15px; font-size: 15px; color: #1A1815; outline: none;" />
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset style="border: none; padding: 0; margin: 0;">
+                <legend style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                  <span style="font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: #FAF7F1; background: #B5532A; width: 30px; height: 30px; borderRadius: 999px; display: inline-flex; align-items: center; justify-content: center;">2</span>
+                  <span style="font-family: 'Fraunces', serif; font-size: 23px; font-weight: 600; color: #1A1815;">Background</span>
+                </legend>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" data-apply-row>
+                  <label style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">Educational background <span style="color: #B5532A;">*</span></span>
+                    <select required value="{{ f.education }}" onChange="{{ setF.education }}" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 14px 15px; font-size: 15px; color: #1A1815; outline: none; appearance: none;">
+                      <option value="">Select…</option>
+                      <option value="secondary">Secondary school</option>
+                      <option value="diploma">Diploma / NCE</option>
+                      <option value="undergrad">Undergraduate degree</option>
+                      <option value="postgrad">Postgraduate degree</option>
+                      <option value="self">Self-taught / other</option>
+                    </select>
+                  </label>
+                  <label style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">Employment status <span style="color: #B5532A;">*</span></span>
+                    <select required value="{{ f.employment }}" onChange="{{ setF.employment }}" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 14px 15px; font-size: 15px; color: #1A1815; outline: none; appearance: none;">
+                      <option value="">Select…</option>
+                      <option value="student">Student</option>
+                      <option value="unemployed">Unemployed</option>
+                      <option value="self-employed">Self-employed</option>
+                      <option value="employed">Employed</option>
+                      <option value="farmer">Farmer / agripreneur</option>
+                    </select>
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset style="border: none; padding: 0; margin: 0;">
+                <legend style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                  <span style="font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: #FAF7F1; background: #B5532A; width: 30px; height: 30px; borderRadius: 999px; display: inline-flex; align-items: center; justify-content: center;">3</span>
+                  <span style="font-family: 'Fraunces', serif; font-size: 23px; font-weight: 600; color: #1A1815;">Your track</span>
+                </legend>
+                <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 22px;">
+                  <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">Area of interest / training track <span style="color: #B5532A;">*</span></span>
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;" data-track-picker>
+                    <sc-for list="{{ trackChoices }}" as="t" hint-placeholder-count="10">
+                      <label style="display: flex; align-items: center; gap: 11px; padding: 13px 15px; border: 1.5px solid {{ t.border }}; background: {{ t.bg }}; borderRadius: 10px; cursor: pointer; transition: border-color 0.15s, background 0.15s;">
+                        <input type="radio" name="track" value="{{ t.value }}" checked="{{ t.checked }}" onChange="{{ t.onPick }}" style="accent-color: #B5532A; width: 16px; height: 16px;" />
+                        <span style="font-size: 14px; font-weight: 500; color: #1A1815;">{{ t.value }}</span>
+                      </label>
+                    </sc-for>
+                  </div>
+                </div>
+                <label style="display: flex; flex-direction: column; gap: 10px;">
+                  <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">Digital skills experience level <span style="color: #B5532A;">*</span></span>
+                  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;" data-skill-picker>
+                    <sc-for list="{{ skillChoices }}" as="s" hint-placeholder-count="4">
+                      <label style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 13px 8px; text-align: center; border: 1.5px solid {{ s.border }}; background: {{ s.bg }}; borderRadius: 10px; cursor: pointer;">
+                        <input type="radio" name="skill" value="{{ s.value }}" checked="{{ s.checked }}" onChange="{{ s.onPick }}" style="display: none;" />
+                        <span style="font-size: 14px; font-weight: 600; color: {{ s.text }};">{{ s.label }}</span>
+                        <span style="font-size: 11.5px; color: #7A7570;">{{ s.sub }}</span>
+                      </label>
+                    </sc-for>
+                  </div>
+                </label>
+              </fieldset>
+
+              <fieldset style="border: none; padding: 0; margin: 0;">
+                <legend style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                  <span style="font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: #FAF7F1; background: #B5532A; width: 30px; height: 30px; borderRadius: 999px; display: inline-flex; align-items: center; justify-content: center;">4</span>
+                  <span style="font-family: 'Fraunces', serif; font-size: 23px; font-weight: 600; color: #1A1815;">Motivation &amp; documents</span>
+                </legend>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                  <label style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">Motivation statement <span style="color: #B5532A;">*</span></span>
+                    <textarea required value="{{ f.motivation }}" onChange="{{ setF.motivation }}" rows="5" placeholder="Why do you want to join the Fellowship, and what will you do with the skills?" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 14px 15px; font-size: 15px; color: #1A1815; outline: none; resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                  </label>
+                  <label style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">LinkedIn profile <span style="color: #A39E96; font-weight: 500;">(optional)</span></span>
+                    <input value="{{ f.linkedin }}" onChange="{{ setF.linkedin }}" placeholder="linkedin.com/in/you" style="width: 100%; background: #FFFFFF; border: 1.5px solid #DDD8CF; borderRadius: 10px; padding: 14px 15px; font-size: 15px; color: #1A1815; outline: none;" />
+                  </label>
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: #4A4540;">CV / résumé upload <span style="color: #B5532A;">*</span></span>
+                    <label style="display: flex; align-items: center; gap: 14px; padding: 18px; border: 1.5px dashed #C9C2B6; borderRadius: 12px; cursor: pointer; background: #FBF9F4; transition: border-color 0.2s;" style-hover="border-color: #B5532A;">
+                      <span style="width: 42px; height: 42px; borderRadius: 10px; background: #FAF1EB; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #B5532A;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></span>
+                      <span style="display: flex; flex-direction: column; gap: 2px;">
+                        <span style="font-size: 14.5px; font-weight: 600; color: #1A1815;">{{ cvLabel }}</span>
+                        <span style="font-size: 12.5px; color: #7A7570;">PDF, DOC, or DOCX — up to 5MB</span>
+                      </span>
+                      <input type="file" accept=".pdf,.doc,.docx" onChange="{{ setCv }}" style="display: none;" />
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+
+              <div style="border-top: 1px solid #E7E1D7; padding-top: 28px; display: flex; flex-direction: column; gap: 22px;">
+                <label style="display: flex; align-items: flex-start; gap: 13px; cursor: pointer;">
+                  <input type="checkbox" checked="{{ f.agree }}" onChange="{{ setAgree }}" style="width: 19px; height: 19px; accent-color: #B5532A; margin-top: 2px; flex-shrink: 0;" />
+                  <span style="font-size: 14.5px; line-height: 1.55; color: #4A4540;">I confirm the information provided is accurate and I agree to RIDLDI's <a href="#" style="color: #B5532A; font-weight: 600;">terms of participation</a> and <a href="#" style="color: #B5532A; font-weight: 600;">privacy policy</a>.</span>
+                </label>
+                <button type="submit" disabled="{{ submitDisabled }}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; padding: 17px 38px; borderRadius: 999px; background: {{ submitBg }}; color: #FAF7F1; font-weight: 600; font-size: 16px; border: none; cursor: {{ submitCursor }}; transition: transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(181,83,42,0.32);">{{ submitLabel }}
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </button>
+              </div>
+            </form>
+
+            <aside style="position: sticky; top: 96px; display: flex; flex-direction: column; gap: 16px;" data-apply-aside>
+              <div style="background: #1A1815; color: #FAF7F1; borderRadius: 20px; padding: 30px;">
+                <div style="font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; margin-bottom: 18px;">What fellows receive</div>
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                  <sc-for list="{{ asidePerks }}" as="p" hint-placeholder-count="4">
+                    <div style="display: flex; gap: 12px; align-items: flex-start;">
+                      <span style="color: #F0A06A; margin-top: 1px; flex-shrink: 0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span>
+                      <span style="font-size: 14.5px; line-height: 1.5; color: rgba(250,247,241,0.86);">{{ p }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="border: 1.5px solid #E7E1D7; borderRadius: 20px; padding: 28px;">
+                <div style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; color: #7A7570; margin-bottom: 18px;">After you apply</div>
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                  <sc-for list="{{ fellowshipSteps }}" as="st" hint-placeholder-count="4">
+                    <div style="display: flex; gap: 14px; align-items: flex-start;">
+                      <span style="font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600; color: #1A1815; background: #F0EBE3; width: 26px; height: 26px; borderRadius: 999px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;">{{ st.n }}</span>
+                      <div>
+                        <div style="font-weight: 600; font-size: 14.5px; color: #1A1815;">{{ st.title }}</div>
+                        <div style="font-size: 13px; color: #7A7570; margin-top: 2px;">{{ st.sub }}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="background: #FAF1EB; border: 1.5px solid #F0D9C8; borderRadius: 20px; padding: 22px 24px;">
+                <div style="font-size: 14px; line-height: 1.6; color: #8A4423;"><strong>Need help applying?</strong> Email <a href="/cdn-cgi/l/email-protection#780a111c141c1116110c11190c110e1d381f15191114561b1715" style="color: #B5532A; font-weight: 600;"><span class="__cf_email__" data-cfemail="55273c3139313c3b3c213c34213c2330153238343c397b363a38">[email&#160;protected]</span></a> and our team will support you.</div>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </sc-if>
+
+    </main>
+  </sc-if>
+
+</div>
+</x-dc>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    page: 'home',
+    scrolled: false,
+    menuOpen: false,
+    openFaq: 0,
+    form: { fullName: '', email: '', phone: '', gender: '', dob: '', location: '', education: '', employment: '', track: '', skill: '', motivation: '', linkedin: '', cv: '', agree: false },
+    submitting: false,
+    submitted: false,
+    newsletterEmail: '',
+    newsletterDone: false,
+    contact: { name: '', email: '', org: '', role: '', message: '' },
+    contactSent: false,
+  };
+
+  componentDidMount() {
+    this._onScroll = () => {
+      const s = window.scrollY > 40;
+      if (s !== this.state.scrolled) this.setState({ scrolled: s });
+    };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+  }
+  componentWillUnmount() {
+    if (this._onScroll) window.removeEventListener('scroll', this._onScroll);
+  }
+
+  go(page) {
+    this.setState({ page, menuOpen: false });
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+  navTo(hash) {
+    if (this.state.page !== 'home') {
+      this.setState({ page: 'home', menuOpen: false }, () => setTimeout(() => this._scrollTo(hash), 80));
+    } else {
+      this.setState({ menuOpen: false });
+      this._scrollTo(hash);
+    }
+  }
+  _scrollTo(hash) {
+    const el = document.getElementById(hash);
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }
+  setField(k, v) { this.setState(s => ({ form: { ...s.form, [k]: v } })); }
+  submit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!this.state.form.agree) return;
+    this.setState({ submitting: true });
+    setTimeout(() => this.setState({ submitting: false, submitted: true }, () => window.scrollTo({ top: 0, behavior: 'smooth' })), 1300);
+  }
+  subscribe(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (this.state.newsletterEmail.trim()) this.setState({ newsletterDone: true });
+  }
+
+  ico(path) {
+    return React.createElement('svg', { width: 17, height: 17, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: path }));
+  }
+
+  renderVals() {
+    const scrolled = this.state.scrolled;
+    const isApply = this.state.page === 'apply';
+    const solid = scrolled || this.state.menuOpen || (isApply && this.state.submitted);
+    const nav = (hash) => () => this.navTo(hash);
+
+    const navLinks = [
+      { label: 'About', onClick: nav('about') },
+      { label: 'Programs', onClick: nav('programs') },
+      { label: 'Fellowship', onClick: nav('fellowship') },
+      { label: 'Impact', onClick: nav('impact') },
+      { label: 'Partners', onClick: nav('partners') },
+      { label: 'Contact', onClick: nav('contact') },
+    ];
+
+    const setIco = (p) => this.ico(p);
+    const mkSet = (k) => (e) => this.setField(k, e.target.value);
+    const trackTitles = ['Software Development', 'Data Analytics & AI', 'Cybersecurity', 'UI/UX Design', 'Cloud Computing', 'Digital Marketing', 'Product Management', 'Blockchain & Web3', 'Digital Content & Media', 'No-Code & Automation'];
+
+    return {
+      isHome: this.state.page === 'home',
+      isApply,
+      menuOpen: this.state.menuOpen,
+      navBg: solid ? 'rgba(250,247,241,0.9)' : 'transparent',
+      navBlur: solid ? 'blur(16px)' : 'none',
+      navBorder: solid ? '#E7E1D7' : 'transparent',
+      navInk: solid ? '#1A1815' : '#FAF7F1',
+      navMuted: solid ? '#A39E96' : 'rgba(250,247,241,0.55)',
+      navLinks,
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      goApply: () => this.go('apply'),
+      goHome: () => this.go('home'),
+      navPartner: () => this.navTo('partners'),
+      navPrograms: nav('programs'),
+      navAbout: nav('about'),
+      navFellowship: nav('fellowship'),
+      navStories: nav('stories'),
+      navContact: nav('contact'),
+
+      earthList: ['Digital literacy & software skills', 'Entrepreneurship incubators', 'Youth & women-led talent programmes', 'Community innovation hubs'],
+      skyList: ['Climate-resilient farming practices', 'Environmental awareness & advocacy', 'Sustainable livelihood transitions', 'Community-led adaptation planning'],
+
+      bigStats: [
+        { value: '60+', label: 'Fellows trained', sub: 'First cohort, Jos 2025', color: '#B5532A' },
+        { value: '78%', label: 'Reported new digital income', sub: 'Within 6 months of training', color: '#B5532A' },
+        { value: '12', label: 'Community projects launched', sub: 'Led by programme alumni', color: '#3A5A78' },
+        { value: '2', label: 'States on the roadmap', sub: 'Plateau today, expanding 2026', color: '#3A5A78' },
+      ],
+
+      tracks: [
+        { num: '01', title: 'Software Development', level: 'Beginner–Adv', desc: 'Build web and mobile applications with modern, in-demand frameworks.', duration: '16 weeks', format: 'Hybrid' },
+        { num: '02', title: 'Data Analytics & AI', level: 'Intermediate', desc: 'Turn raw data into decisions; foundations of machine learning.', duration: '14 weeks', format: 'Hybrid' },
+        { num: '03', title: 'Cybersecurity', level: 'Intermediate', desc: 'Protect systems, networks, and people from real-world threats.', duration: '14 weeks', format: 'In-person' },
+        { num: '04', title: 'UI/UX Design', level: 'Beginner', desc: 'Design intuitive, human-centred digital products people love.', duration: '12 weeks', format: 'Hybrid' },
+        { num: '05', title: 'Cloud Computing', level: 'Intermediate', desc: 'Deploy and scale on AWS, Azure, and Google Cloud.', duration: '12 weeks', format: 'Online' },
+        { num: '06', title: 'Digital Marketing', level: 'Beginner', desc: 'Grow brands with SEO, social, content, and paid media.', duration: '10 weeks', format: 'Hybrid' },
+        { num: '07', title: 'Product Management', level: 'Intermediate', desc: 'Lead products from idea to launch and beyond.', duration: '12 weeks', format: 'Hybrid' },
+        { num: '08', title: 'Blockchain & Web3', level: 'Advanced', desc: 'Build decentralised apps and smart contracts.', duration: '12 weeks', format: 'Online' },
+        { num: '09', title: 'Digital Content & Media', level: 'Beginner', desc: 'Create video, audio, and stories that move people.', duration: '10 weeks', format: 'In-person' },
+        { num: '10', title: 'No-Code & Automation', level: 'Beginner', desc: 'Ship tools and automate workflows without writing code.', duration: '8 weeks', format: 'Online' },
+      ],
+
+      fellowshipPerks: [
+        { icon: setIco('M12 2 2 7l10 5 10-5zM2 17l10 5 10-5M2 12l10 5 10-5'), title: 'Practitioner-led training', sub: 'Taught by people who do the work' },
+        { icon: setIco('M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13A4 4 0 0 1 16 11'), title: '1:1 mentorship', sub: 'Paired with an industry mentor' },
+        { icon: setIco('M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M9 15l2 2 4-4'), title: 'Project portfolio', sub: 'Real work to show employers' },
+        { icon: setIco('M22 12h-4l-3 9L9 3l-3 9H2'), title: 'Partner network', sub: 'Direct line to hiring partners' },
+      ],
+      fellowshipSteps: [
+        { n: '1', title: 'Apply online', sub: 'Complete the application form — 10 minutes' },
+        { n: '2', title: 'Skills screening', sub: 'A short assessment of your track readiness' },
+        { n: '3', title: 'Interview', sub: 'A conversation about your goals and motivation' },
+        { n: '4', title: 'Onboarding', sub: 'Welcome to your cohort and mentor' },
+      ],
+
+      testimonials: [
+        { quote: 'I walked in able to use a phone and walked out building websites. Three months later I had my first paying client. RIDLDI didn\u2019t hand me anything — they unlocked what was already there.', name: 'Amina Yusuf', role: 'Web Developer · Jos cohort', slotId: 'story-1' },
+        { quote: 'The entrepreneurship track changed how I think about my farm. I now sell produce online and track everything digitally. My income has nearly doubled in a year.', name: 'Daniel Okeke', role: 'Agripreneur · Plateau State', slotId: 'story-2' },
+        { quote: 'As a woman in a rural community, I never imagined a career in tech. The mentorship made it real. I am now a junior data analyst working remotely.', name: 'Grace Bature', role: 'Data Analyst · Jos cohort', slotId: 'story-3' },
+      ],
+
+      partnerSlots: [
+        { id: 'partner-1' }, { id: 'partner-2' }, { id: 'partner-3' }, { id: 'partner-4' }, { id: 'partner-5' },
+      ],
+
+      mediaOutlets: ['The Guardian NG', 'Premium Times', 'TechCabal', 'Daily Trust', 'Channels TV'],
+
+      team: [
+        { name: 'Founder / Director', role: 'Executive Lead', bio: 'Sets vision across both missions and stewards partnerships.', slotId: 'team-1' },
+        { name: 'Programmes Lead', role: 'Training & Curriculum', bio: 'Designs the track curricula and runs each cohort end to end.', slotId: 'team-2' },
+        { name: 'Climate Lead', role: 'Adaptation & Advocacy', bio: 'Leads community-led climate resilience and field projects.', slotId: 'team-3' },
+        { name: 'Partnerships Lead', role: 'Growth & Sponsorship', bio: 'Builds the corporate, sponsor, and donor network.', slotId: 'team-4' },
+      ],
+
+      events: [
+        { day: '18', month: 'Jul', title: 'Digital Skills Open Day — Jos', meta: 'Free taster sessions across all ten tracks · Hamzury Hub, Jos', tag: 'Free' },
+        { day: '06', month: 'Aug', title: 'Women in Tech Bootcamp', meta: 'Two-day intensive for women entering tech · Plateau State', tag: 'Apply' },
+        { day: '21', month: 'Sep', title: 'Climate & Community Forum', meta: 'Farmers, fisherfolk & advocates on adaptation · Hybrid', tag: 'RSVP' },
+      ],
+
+      supportTiers: [
+        { amount: '₦25k', impact: 'Equips one fellow with learning materials for a cohort.' },
+        { amount: '₦150k', impact: 'Sponsors a full scholarship seat in any track.' },
+        { amount: '₦500k', impact: 'Funds a community innovation hub session series.' },
+        { amount: 'Custom', impact: 'Corporate sponsorships & multi-year partnerships.' },
+      ],
+
+      faqs: [
+        { q: 'Who is eligible to apply for the Fellowship?', a: 'Anyone aged 16 and above living in Nigeria with a genuine interest in digital skills. No prior experience is required for beginner tracks — we select on motivation and potential, not pedigree.' },
+        { q: 'How much does the programme cost?', a: 'Qualifying fellows train at no cost, underwritten by our partners and sponsors. Selected applicants are notified of their funded status during onboarding.' },
+        { q: 'Are programmes in-person, online, or hybrid?', a: 'It depends on the track. Some run in-person at our Jos hub, others are fully online, and several are hybrid. Each track card on this page lists its format.' },
+        { q: 'What support do fellows receive beyond training?', a: 'One-to-one mentorship, a real project portfolio, career guidance, and an introduction to our hiring partner network upon completion.' },
+        { q: 'How can my organisation partner or sponsor?', a: 'Use the partnership inquiry form below or email us directly. We offer cohort sponsorships, equipment grants, mentorship partnerships, and climate-project co-funding.' },
+        { q: 'Where does RIDLDI currently operate?', a: 'We are registered in Abuja and ran our first cohort in Jos, Plateau State, in 2025. We are expanding to additional states across 2026.' },
+      ].map((f, i) => ({ ...f, open: this.state.openFaq === i, rot: this.state.openFaq === i ? 'rotate(45deg)' : 'none', onToggle: () => this.setState(s => ({ openFaq: s.openFaq === i ? -1 : i })) })),
+
+      contact: this.state.contact,
+      setContact: {
+        name: (e) => this.setState(s => ({ contact: { ...s.contact, name: e.target.value } })),
+        email: (e) => this.setState(s => ({ contact: { ...s.contact, email: e.target.value } })),
+        org: (e) => this.setState(s => ({ contact: { ...s.contact, org: e.target.value } })),
+        role: (e) => this.setState(s => ({ contact: { ...s.contact, role: e.target.value } })),
+        message: (e) => this.setState(s => ({ contact: { ...s.contact, message: e.target.value } })),
+      },
+      submitContact: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ contactSent: true }); },
+      contactSent: this.state.contactSent,
+      contactOpen: !this.state.contactSent,
+
+      newsletterOpen: !this.state.newsletterDone,
+
+      heroStats: [
+        { value: '60+', label: 'Fellows trained in our first cohort' },
+        { value: '10', label: 'Digital training tracks' },
+        { value: '2', label: 'Communities reached — rural & urban' },
+        { value: '2', label: 'Missions: human potential & climate' },
+      ],
+
+      socials: [
+        { label: 'LinkedIn', href: '#', icon: setIco('M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z') },
+        { label: 'Twitter', href: '#', icon: setIco('M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z') },
+        { label: 'Instagram', href: '#', icon: setIco('M2 7a5 5 0 0 1 5-5h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM17.5 6.5h.01') },
+        { label: 'YouTube', href: '#', icon: setIco('M22 8a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h12a4 4 0 0 0 4-4zM10 9l5 3-5 3z') },
+      ],
+
+      footerCols: [
+        { title: 'Explore', links: [ { label: 'About Us', onClick: nav('about') }, { label: 'Our Impact', onClick: nav('impact') }, { label: 'Programs', onClick: nav('programs') }, { label: 'Success Stories', onClick: nav('stories') } ] },
+        { title: 'Get Involved', links: [ { label: 'Apply as a Fellow', onClick: () => this.go('apply') }, { label: 'Partner With Us', onClick: nav('partners') }, { label: 'Support Us', onClick: nav('support') }, { label: 'Events', onClick: nav('events') } ] },
+        { title: 'Resources', links: [ { label: 'News & Blog', onClick: nav('contact') }, { label: 'FAQ', onClick: nav('faq') }, { label: 'Contact', onClick: nav('contact') }, { label: 'Annual Report', onClick: nav('support') } ] },
+      ],
+
+      newsletterEmail: this.state.newsletterEmail,
+      setNewsletter: (e) => this.setState({ newsletterEmail: e.target.value }),
+      subscribe: (e) => this.subscribe(e),
+      newsletterDone: this.state.newsletterDone,
+
+      f: this.state.form,
+      setF: {
+        fullName: mkSet('fullName'), email: mkSet('email'), phone: mkSet('phone'),
+        gender: mkSet('gender'), dob: mkSet('dob'), location: mkSet('location'),
+        education: mkSet('education'), employment: mkSet('employment'),
+        motivation: mkSet('motivation'), linkedin: mkSet('linkedin'),
+      },
+      trackChoices: trackTitles.map(t => ({
+        value: t, checked: this.state.form.track === t,
+        onPick: () => this.setField('track', t),
+        border: this.state.form.track === t ? '#B5532A' : '#DDD8CF',
+        bg: this.state.form.track === t ? '#FAF1EB' : '#FFFFFF',
+      })),
+      skillChoices: [
+        { v: 'Beginner', sub: 'New to it' }, { v: 'Intermediate', sub: 'Some basics' },
+        { v: 'Advanced', sub: 'Comfortable' }, { v: 'Expert', sub: 'Professional' },
+      ].map(s => ({
+        value: s.v, label: s.v, sub: s.sub, checked: this.state.form.skill === s.v,
+        onPick: () => this.setField('skill', s.v),
+        border: this.state.form.skill === s.v ? '#B5532A' : '#DDD8CF',
+        bg: this.state.form.skill === s.v ? '#FAF1EB' : '#FFFFFF',
+        text: this.state.form.skill === s.v ? '#B5532A' : '#1A1815',
+      })),
+      setCv: (e) => { const file = e.target.files && e.target.files[0]; this.setField('cv', file ? file.name : ''); },
+      cvLabel: this.state.form.cv || 'Click to upload your CV',
+      setAgree: (e) => this.setField('agree', e.target.checked),
+      submit: (e) => this.submit(e),
+      submitted: this.state.submitted,
+      applyOpen: !this.state.submitted,
+      applicantName: (this.state.form.fullName || '').trim().split(' ')[0] || 'there',
+      submitDisabled: !this.state.form.agree || this.state.submitting,
+      submitBg: (!this.state.form.agree || this.state.submitting) ? '#CDA795' : '#B5532A',
+      submitCursor: !this.state.form.agree ? 'not-allowed' : (this.state.submitting ? 'wait' : 'pointer'),
+      submitLabel: this.state.submitting ? 'Submitting…' : 'Submit application',
+      asidePerks: [
+        'Fully-funded training for those who qualify',
+        '1:1 mentorship with an industry expert',
+        'A real, portfolio-ready project',
+        'Introductions to our hiring partner network',
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

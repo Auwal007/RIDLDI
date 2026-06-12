@@ -110,7 +110,7 @@
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
     --radius-xl: calc(var(--radius) + 4px);
-    --font-fraunces: 'Fraunces', Georgia, serif;
+    --font-outfit: 'Outfit', sans-serif;
 }
 
 @layer base {
@@ -121,3 +121,161 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* ==========================================
+   RESPONSIVENESS & MOBILE OVERRIDES
+   ========================================== */
+
+/* Navbar responsive behaviour */
+nav {
+    display: none;
+}
+@media (min-width: 768px) {
+    nav {
+        display: flex !important;
+    }
+}
+
+/* Mobile Nav Menu visibility control on desktop */
+@media (min-width: 768px) {
+    .mobile-menu {
+        display: none !important;
+    }
+}
+
+/* Tablet & Mobile Layout Adaptations (<= 1024px) */
+@media (max-width: 1024px) {
+    .about-grid,
+    .fellowship-grid,
+    .apply-grid,
+    .support-grid,
+    .contact-grid {
+        grid-template-columns: 1fr !important;
+        gap: 48px !important;
+    }
+
+    .apply-aside {
+        position: static !important;
+    }
+}
+
+/* Mobile Layout Adaptations (<= 768px) */
+@media (max-width: 768px) {
+    /* general section paddings */
+    section {
+        padding: 64px 20px !important;
+    }
+    
+    /* hero section padding exception */
+    main > section:first-of-type {
+        padding: 120px 20px 60px !important;
+        min-height: auto !important;
+    }
+
+    /* stats strip grid */
+    .stats-strip-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 24px !important;
+        padding: 36px 20px !important;
+    }
+
+    /* missions grid layout */
+    .missions-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .missions-grid > div {
+        padding: 48px 24px !important;
+    }
+
+    /* impact stats grid */
+    .impact-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* programs tracks grid */
+    .tracks-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    /* fellowship perks */
+    .fellowship-perks-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    /* ground work photo grid */
+    .photo-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    /* success stories */
+    .stories-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    /* partners logogrid */
+    .partners-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    /* media strip */
+    .media-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 24px !important;
+    }
+
+    /* team cards */
+    .team-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* contact details inputs */
+    .contact-row {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* footer grid */
+    .footer-grid {
+        grid-template-columns: 1fr !important;
+        gap: 36px !important;
+    }
+
+    /* fellowship form fields */
+    .apply-row {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .track-picker-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+
+    .skill-picker-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+}
+
+/* Extra Small Screen Adaptations (<= 480px) */
+@media (max-width: 480px) {
+    .stats-strip-grid,
+    .impact-grid,
+    .partners-grid,
+    .team-grid,
+    .skill-picker-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* adjust extremely large hero main title */
+    h1 {
+        font-size: 44px !important;
+        line-height: 1.05 !important;
+    }
+}
+
