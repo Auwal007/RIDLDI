@@ -279,3 +279,81 @@ nav {
     }
 }
 
+/* ==========================================
+   ADMIN DASHBOARD RESPONSIVENESS OVERRIDES
+   ========================================== */
+
+/* Admin layout mobile overlay backdrop */
+.mobile-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+}
+
+/* Admin analytics columns */
+@media (max-width: 1024px) {
+    .admin-analytics-grid {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+    }
+    
+    .admin-details-grid {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+    }
+}
+
+/* Admin search & filter wrapper */
+@media (max-width: 768px) {
+    .admin-filters-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+        padding: 16px 20px !important;
+    }
+    
+    .admin-filters-bar > div {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+    }
+    
+    .admin-filters-bar select {
+        width: 100% !important;
+    }
+
+    /* Admin mock pagination footer */
+    .admin-pagination {
+        flex-direction: column !important;
+        gap: 16px !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    /* Admin detailed applicant header & buttons */
+    .admin-details-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 16px !important;
+    }
+
+    .admin-details-actions {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    .admin-details-actions > button {
+        width: 100% !important;
+    }
+}
+
+/* Admin docs links stacking */
+@media (max-width: 600px) {
+    .admin-docs-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+}
+
+

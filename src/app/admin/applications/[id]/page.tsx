@@ -4,7 +4,40 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Mail, Phone, MapPin, Briefcase, GraduationCap, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { Application } from '@/lib/db';
+import { Application, ApplicationStatus } from '@/lib/db';
+
+interface StarRatingProps {
+  value: number;
+  onChange: (v: number) => void;
+  disabled: boolean;
+}
+
+function StarRating({ value, onChange, disabled }: StarRatingProps) {
+  return (
+    <div style={{ display: 'flex', gap: '6px' }}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          type="button"
+          key={star}
+          disabled={disabled}
+          onClick={() => onChange(star)}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            padding: 0,
+            fontSize: '22px',
+            color: star <= value ? '#F59E0B' : '#E5E7EB',
+            transition: 'transform 0.15s, color 0.15s'
+          }}
+          className="hover:scale-110"
+        >
+          ★
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function ApplicationDetailsPage() {
   const params = useParams();
@@ -12,6 +45,10 @@ export default function ApplicationDetailsPage() {
   const [application, setApplication] = useState<Application | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [notes, setNotes] = useState('');
+  const [scorecard, setScorecard] = useState({ motivation: 0, readiness: 0, education: 0, fit: 0 });
+  const [notesSaved, setNotesSaved] = useState(false);
+  const [scorecardSaved, setScorecardSaved] = useState(false);
 
   useEffect(() => {
     const fetchApplication = async () => {
@@ -20,6 +57,8 @@ export default function ApplicationDetailsPage() {
         if (res.ok) {
           const data = await res.json();
           setApplication(data);
+          setNotes(data.notes || '');
+          setScorecard(data.scorecard || { motivation: 0, readiness: 0, education: 0, fit: 0 });
         } else {
           router.push('/admin/applications');
         }
@@ -32,6 +71,54 @@ export default function ApplicationDetailsPage() {
 
     if (params.id) fetchApplication();
   }, [params.id, router]);
+
+  const handleSaveNotes = async () => {
+    if (!application) return;
+    setUpdating(true);
+    try {
+      const res = await fetch(`/api/applications/${application.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setApplication(updated);
+        setNotesSaved(true);
+        setTimeout(() => setNotesSaved(false), 2000);
+      }
+    } catch (error) {
+      console.error('Failed to update notes:', error);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleSaveScorecard = async () => {
+    if (!application) return;
+    setUpdating(true);
+    try {
+      const res = await fetch(`/api/applications/${application.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scorecard }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setApplication(updated);
+        setScorecardSaved(true);
+        setTimeout(() => setScorecardSaved(false), 2000);
+      }
+    } catch (error) {
+      console.error('Failed to update scorecard:', error);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleScorecardChange = (key: string, val: number) => {
+    setScorecard(prev => ({ ...prev, [key]: val }));
+  };
 
   const handleStatusChange = async (newStatus: string) => {
     if (!application) return;
@@ -75,6 +162,12 @@ export default function ApplicationDetailsPage() {
   const statusStyle = getStatusStyle(application.status);
   const StatusIcon = statusStyle.icon;
 
+  const timelineEvents = application.timeline && application.timeline.length > 0
+    ? application.timeline
+    : [
+        { status: 'pending', timestamp: application.createdAt }
+      ];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '60px' }}>
       {/* Header & Actions */}
@@ -87,7 +180,7 @@ export default function ApplicationDetailsPage() {
           <ArrowLeft size={16} /> Back to Applications
         </Link>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
+        <div className="admin-details-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
               <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '32px', fontWeight: 600, color: '#111827', margin: 0 }}>
@@ -114,7 +207,7 @@ export default function ApplicationDetailsPage() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div className="admin-details-actions" style={{ display: 'flex', gap: '12px' }}>
             <button
               onClick={() => handleStatusChange('reviewing')}
               disabled={updating || application.status === 'reviewing'}
@@ -143,9 +236,9 @@ export default function ApplicationDetailsPage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', alignItems: 'start' }}>
+      <div className="admin-details-grid" style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.9fr', gap: '24px', alignItems: 'start' }}>
 
-        {/* Left Column - Applicant Info */}
+        {/* Left Column - Applicant Info & Timeline */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
           {/* Contact & Basic Info */}
@@ -211,10 +304,42 @@ export default function ApplicationDetailsPage() {
               </div>
             </div>
           </div>
+
+          {/* Live Activity Timeline */}
+          <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '24px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#111827', margin: '0 0 20px' }}>Activity Timeline</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', position: 'relative', paddingLeft: '20px' }}>
+              <div style={{ position: 'absolute', left: '4px', top: '8px', bottom: '8px', width: '2px', background: '#E5E7EB' }} />
+              {timelineEvents.map((evt, idx) => {
+                const stepStyle = getStatusStyle(evt.status);
+                return (
+                  <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '2px', position: 'relative' }}>
+                    <div style={{
+                      position: 'absolute',
+                      left: '-20px',
+                      top: '6px',
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '50%',
+                      background: '#FFFFFF',
+                      border: `2.5px solid ${stepStyle.color}`,
+                      zIndex: 2
+                    }} />
+                    <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#111827', textTransform: 'capitalize', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {evt.status}
+                    </div>
+                    <div style={{ fontSize: '11.5px', color: '#6B7280' }}>
+                      {new Date(evt.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
-        {/* Right Column - Track & Motivation */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: 2 }}>
+        {/* Right Column - Track, Scorecard, Motivation & Reviewer Notes */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
           {/* Fellowship Track */}
           <div style={{ background: '#FAF1EB', borderRadius: '12px', border: '1px solid #F0D9C8', padding: '24px' }}>
@@ -233,9 +358,58 @@ export default function ApplicationDetailsPage() {
             </div>
           </div>
 
+          {/* Candidate Assessment Scorecard */}
+          <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#111827', margin: 0 }}>Candidate Assessment</h3>
+              {scorecardSaved && <span style={{ fontSize: '12.5px', color: '#10B981', fontWeight: 600, animation: 'ridFade 0.2s ease' }}>✓ Saved!</span>}
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
+              {[
+                { key: 'motivation', label: 'Motivation Quality', desc: 'Alignment with fellowship goals and drive' },
+                { key: 'readiness', label: 'Technical Readiness', desc: 'Pre-existing digital exposure or capacity' },
+                { key: 'education', label: 'Educational Fit', desc: 'Suitability of background matching target track' },
+                { key: 'fit', label: 'Community & Climate Fit', desc: 'Alignment with rural/urban community values' }
+              ].map((criteria) => (
+                <div key={criteria.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                  <div>
+                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#374151' }}>{criteria.label}</div>
+                    <div style={{ fontSize: '12px', color: '#6B7280' }}>{criteria.desc}</div>
+                  </div>
+                  <StarRating 
+                    value={scorecard[criteria.key as keyof typeof scorecard]} 
+                    onChange={(val) => handleScorecardChange(criteria.key, val)}
+                    disabled={updating}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={handleSaveScorecard}
+              disabled={updating}
+              style={{
+                width: '100%',
+                padding: '11px',
+                background: '#1A1815',
+                color: '#FAF7F1',
+                borderRadius: '8px',
+                border: 'none',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: updating ? 'not-allowed' : 'pointer',
+                transition: 'opacity 0.2s'
+              }}
+              className="hover:opacity-95"
+            >
+              {updating ? 'Saving Scorecard...' : 'Save Assessment Scores'}
+            </button>
+          </div>
+
           {/* Motivation & Docs */}
           <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '24px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#111827', margin: '0 0 20px' }}>Motivation & Documents</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#111827', margin: '0 0 20px' }}>Motivation &amp; Documents</h3>
 
             <div style={{ marginBottom: '24px' }}>
               <div style={{ fontSize: '14px', fontWeight: 600, color: '#374151', marginBottom: '12px' }}>Motivation Statement</div>
@@ -244,7 +418,7 @@ export default function ApplicationDetailsPage() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="admin-docs-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <div>
                 <div style={{ fontSize: '14px', fontWeight: 600, color: '#374151', marginBottom: '8px' }}>LinkedIn Profile</div>
                 {application.linkedin ? (
@@ -271,6 +445,57 @@ export default function ApplicationDetailsPage() {
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Reviewer Notes & Feedback */}
+          <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#111827', margin: 0 }}>Reviewer Feedback Notes</h3>
+              {notesSaved && <span style={{ fontSize: '12.5px', color: '#10B981', fontWeight: 600, animation: 'ridFade 0.2s ease' }}>✓ Saved!</span>}
+            </div>
+
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={4}
+              placeholder="Add internal evaluation feedback, interview notes, or screening feedback..."
+              style={{
+                width: '100%',
+                background: '#FFFFFF',
+                border: '1.5px solid #DDD8CF',
+                borderRadius: '8px',
+                padding: '12px',
+                fontSize: '14.5px',
+                color: '#1A1815',
+                outline: 'none',
+                resize: 'vertical',
+                fontFamily: 'inherit',
+                lineHeight: 1.5,
+                marginBottom: '16px'
+              }}
+              className="focus:border-[#B5532A]"
+            />
+
+            <button
+              onClick={handleSaveNotes}
+              disabled={updating}
+              style={{
+                width: '100%',
+                padding: '11px',
+                background: '#B5532A',
+                color: '#FAF7F1',
+                borderRadius: '8px',
+                border: 'none',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: updating ? 'not-allowed' : 'pointer',
+                transition: 'background 0.2s',
+                boxShadow: '0 2px 4px rgba(181,83,42,0.2)'
+              }}
+              className="hover:bg-[#9E4420]"
+            >
+              {updating ? 'Saving Notes...' : 'Save Notes & Feedback'}
+            </button>
           </div>
 
         </div>

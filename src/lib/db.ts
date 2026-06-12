@@ -17,6 +17,51 @@ export interface Application {
   cv: string;
   status: ApplicationStatus;
   createdAt: string;
+  notes?: string;
+  scorecard?: {
+    motivation: number;
+    readiness: number;
+    education: number;
+    fit: number;
+  };
+  timeline?: {
+    status: string;
+    timestamp: string;
+  }[];
+  startDate?: string;
+  mentorName?: string;
+}
+
+export interface SystemSettings {
+  applicationDeadline: string;
+  activeTracks: string[];
+  intakeLimit: number;
+}
+
+export let systemSettings: SystemSettings = {
+  applicationDeadline: '2026-09-30',
+  activeTracks: [
+    'Software Development',
+    'Data Analytics & AI',
+    'Cybersecurity',
+    'UI/UX Design',
+    'Cloud Computing',
+    'Digital Marketing',
+    'Product Management',
+    'Blockchain & Web3',
+    'Digital Content & Media',
+    'No-Code & Automation',
+  ],
+  intakeLimit: 150
+};
+
+export function getSystemSettings(): SystemSettings {
+  return { ...systemSettings };
+}
+
+export function updateSystemSettings(updates: Partial<SystemSettings>): SystemSettings {
+  systemSettings = { ...systemSettings, ...updates };
+  return systemSettings;
 }
 
 // In-memory data store for applications
@@ -38,6 +83,17 @@ export let mockApplications: Application[] = [
     cv: 'jane_doe_cv.pdf',
     status: 'reviewing',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(), // 2 days ago
+    notes: 'Strong analytical skills, but needs to focus more on project experience.',
+    scorecard: {
+      motivation: 4,
+      readiness: 3,
+      education: 4,
+      fit: 4
+    },
+    timeline: [
+      { status: 'pending', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString() },
+      { status: 'reviewing', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1.5).toISOString() }
+    ]
   },
   {
     id: 'app_2',
@@ -56,6 +112,16 @@ export let mockApplications: Application[] = [
     cv: 'john_smith_resume.docx',
     status: 'pending',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(), // 5 hours ago
+    notes: '',
+    scorecard: {
+      motivation: 5,
+      readiness: 5,
+      education: 5,
+      fit: 4
+    },
+    timeline: [
+      { status: 'pending', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString() }
+    ]
   },
   {
     id: 'app_3',
@@ -74,6 +140,20 @@ export let mockApplications: Application[] = [
     cv: 'alice_ux.pdf',
     status: 'approved',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(), // 5 days ago
+    notes: 'Outstanding portfolio mockup, great communication during pre-screening.',
+    scorecard: {
+      motivation: 5,
+      readiness: 4,
+      education: 3,
+      fit: 5
+    },
+    timeline: [
+      { status: 'pending', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString() },
+      { status: 'reviewing', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString() },
+      { status: 'approved', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString() }
+    ],
+    startDate: '2026-07-01',
+    mentorName: 'Dr. Sarah Alao'
   }
 ];
 
@@ -85,21 +165,61 @@ export function getApplication(id: string): Application | undefined {
   return mockApplications.find(app => app.id === id);
 }
 
-export function addApplication(app: Omit<Application, 'id' | 'status' | 'createdAt'>): Application {
+export function addApplication(app: Omit<Application, 'id' | 'status' | 'createdAt' | 'notes' | 'scorecard' | 'timeline'>): Application {
+  const createdAt = new Date().toISOString();
   const newApp: Application = {
     ...app,
     id: `app_${Math.random().toString(36).substring(2, 9)}`,
     status: 'pending',
-    createdAt: new Date().toISOString(),
+    createdAt,
+    notes: '',
+    scorecard: {
+      motivation: 0,
+      readiness: 0,
+      education: 0,
+      fit: 0
+    },
+    timeline: [
+      { status: 'pending', timestamp: createdAt }
+    ]
   };
   mockApplications.push(newApp);
   return newApp;
 }
 
-export function updateApplicationStatus(id: string, status: ApplicationStatus): Application | null {
+export function updateApplication(id: string, updates: Partial<Application>): Application | null {
   const index = mockApplications.findIndex(app => app.id === id);
   if (index === -1) return null;
 
-  mockApplications[index] = { ...mockApplications[index], status };
-  return mockApplications[index];
+  const currentApp = mockApplications[index];
+  
+  // Create copy and apply general updates
+  const updatedApp = { 
+    ...currentApp, 
+    ...updates,
+    scorecard: updates.scorecard ? { ...currentApp.scorecard, ...updates.scorecard } : currentApp.scorecard
+  };
+
+  // If status is updated and differs from the current one, record a new timeline milestone
+  if (updates.status && updates.status !== currentApp.status) {
+    const timeline = currentApp.timeline ? [...currentApp.timeline] : [];
+    timeline.push({
+      status: updates.status,
+      timestamp: new Date().toISOString()
+    });
+    updatedApp.timeline = timeline;
+  }
+
+  mockApplications[index] = updatedApp;
+  return updatedApp;
 }
+
+export function updateApplicationStatus(id: string, status: ApplicationStatus): Application | null {
+  return updateApplication(id, { status });
+}
+
+export const ADMIN_CREDENTIALS = {
+  email: 'admin@ridldi.org',
+  password: 'admin123'
+};
+

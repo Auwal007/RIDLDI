@@ -45,6 +45,35 @@ export default function ApplicationsPage() {
     return matchesSearch && matchesStatus;
   });
 
+  const exportToCSV = () => {
+    const headers = ['ID', 'Full Name', 'Email', 'Phone', 'Gender', 'DOB', 'Location', 'Education', 'Employment', 'Track', 'Skill Level', 'Status', 'Applied Date'];
+    const rows = filteredApps.map(app => [
+      app.id,
+      `"${app.fullName.replace(/"/g, '""')}"`,
+      app.email,
+      app.phone,
+      app.gender || '',
+      app.dob || '',
+      `"${app.location.replace(/"/g, '""')}"`,
+      app.education,
+      app.employment,
+      `"${app.track.replace(/"/g, '""')}"`,
+      app.skill,
+      app.status,
+      new Date(app.createdAt).toLocaleDateString()
+    ]);
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `ridldi_applications_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loading) {
     return <div style={{ padding: '40px', textAlign: 'center' }}>Loading applications...</div>;
   }
@@ -60,11 +89,32 @@ export default function ApplicationsPage() {
             Manage and review all fellowship applications.
           </p>
         </div>
+        <button
+          onClick={exportToCSV}
+          style={{
+            padding: '10px 20px',
+            background: '#B5532A',
+            border: 'none',
+            borderRadius: '8px',
+            color: '#FFFFFF',
+            fontSize: '14.5px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 2px 4px rgba(181,83,42,0.2)'
+          }}
+          className="hover:bg-[#9E4420] transition-colors"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Export to CSV
+        </button>
       </div>
 
       <div style={{ background: '#FFFFFF', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', border: '1px solid #F3F4F6' }}>
         {/* Filters and Actions */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E5E7EB', display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+        <div className="admin-filters-bar" style={{ padding: '20px 24px', borderBottom: '1px solid #E5E7EB', display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', gap: '12px', flex: '1 1 300px' }}>
             <div style={{ position: 'relative', flex: 1 }}>
               <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF' }}>
@@ -189,7 +239,7 @@ export default function ApplicationsPage() {
 
         {/* Pagination (Mock UI) */}
         {filteredApps.length > 0 && (
-          <div style={{ padding: '16px 24px', borderTop: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="admin-pagination" style={{ padding: '16px 24px', borderTop: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '14px', color: '#6B7280' }}>
               Showing <span style={{ fontWeight: 500, color: '#374151' }}>1</span> to <span style={{ fontWeight: 500, color: '#374151' }}>{filteredApps.length}</span> of <span style={{ fontWeight: 500, color: '#374151' }}>{filteredApps.length}</span> results
             </span>

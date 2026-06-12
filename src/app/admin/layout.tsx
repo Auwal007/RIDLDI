@@ -18,6 +18,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const closeSidebar = () => setSidebarOpen(false);
 
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      if (res.ok) {
+        window.location.href = '/login';
+      }
+    } catch (error) {
+      console.error('Failed to log out:', error);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#F5F7F9', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
       {/* Mobile Sidebar Overlay */}
@@ -40,12 +51,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           background: '#1A1815',
           color: '#FAF7F1',
           zIndex: 50,
-          transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-          transition: 'transform 0.3s ease-in-out',
           display: 'flex',
           flexDirection: 'column'
         }}
-        className="md:translate-x-0"
+        className={`transition-transform duration-300 ease-in-out md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div style={{ padding: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <Link href="/" style={{ fontFamily: "'Outfit', sans-serif", fontSize: '24px', fontWeight: 700, color: '#FAF7F1', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -93,7 +102,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         <div style={{ padding: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-          <button style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'none', border: 'none', color: 'rgba(250,247,241,0.6)', cursor: 'pointer', fontWeight: 500, width: '100%', padding: '8px 0' }} className="hover:text-white">
+          <button
+            onClick={handleLogout}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'none', border: 'none', color: 'rgba(250,247,241,0.6)', cursor: 'pointer', fontWeight: 500, width: '100%', padding: '8px 0' }}
+            className="hover:text-white"
+          >
             <LogOut size={20} />
             Sign Out
           </button>

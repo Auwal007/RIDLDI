@@ -61,7 +61,7 @@ export default function ApplyPage() {
     }
   };
 
-  const trackTitles = [
+  const [trackTitles, setTrackTitles] = useState<string[]>([
     'Software Development',
     'Data Analytics & AI',
     'Cybersecurity',
@@ -72,7 +72,34 @@ export default function ApplyPage() {
     'Blockchain & Web3',
     'Digital Content & Media',
     'No-Code & Automation',
-  ];
+  ]);
+  const [deadlineText, setDeadlineText] = useState('30 September 2026');
+
+  React.useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.activeTracks && data.activeTracks.length > 0) {
+            setTrackTitles(data.activeTracks);
+          }
+          if (data.applicationDeadline) {
+            const dateObj = new Date(data.applicationDeadline);
+            const formatted = dateObj.toLocaleDateString('en-US', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            });
+            setDeadlineText(formatted);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load system settings:', error);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const skillLevels = [
     { v: 'Beginner', sub: 'New to it' },
@@ -219,7 +246,7 @@ export default function ApplyPage() {
                 </Link>
                 <p style={{ fontSize: '12.5px', letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 600, color: '#F0A06A', margin: '0 0 16px' }}>Fellowship application · Cohort 02</p>
                 <h1 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: 'clamp(40px, 6vw, 68px)', lineHeight: 1.0, letterSpacing: '-0.025em', margin: '0 0 18px' }}>Apply as a Fellow</h1>
-                <p style={{ fontSize: '18px', lineHeight: '1.6', color: 'rgba(250,247,241,0.78)', margin: 0, maxWidth: '560px' }}>It takes about 10 minutes. There are no application fees — we select on motivation and potential. Applications for Cohort 02 close 30 September 2026.</p>
+                <p style={{ fontSize: '18px', lineHeight: '1.6', color: 'rgba(250,247,241,0.78)', margin: 0, maxWidth: '560px' }}>It takes about 10 minutes. There are no application fees — we select on motivation and potential. Applications for Cohort 02 close {deadlineText}.</p>
               </div>
             </section>
 
