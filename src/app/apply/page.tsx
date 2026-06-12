@@ -33,16 +33,32 @@ export default function ApplyPage() {
     setField('cv', file ? file.name : '');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.agree) return;
     setSubmitting(true);
-    // Simulate submission API call
-    setTimeout(() => {
+
+    try {
+      const response = await fetch('/api/applications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+
+      if (response.ok) {
+        setSubmitting(false);
+        setSubmitted(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        console.error('Failed to submit application');
+        setSubmitting(false);
+      }
+    } catch (error) {
+      console.error('Error submitting application:', error);
       setSubmitting(false);
-      setSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 1300);
+    }
   };
 
   const trackTitles = [
